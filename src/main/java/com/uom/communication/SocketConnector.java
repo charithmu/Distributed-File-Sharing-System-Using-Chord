@@ -30,13 +30,14 @@ public class SocketConnector implements Connector {
 
         try {
             sendSocket = new DatagramSocket();
-        } catch (Exception ex) {
+        } catch (SocketException ex) {
             System.err.println("Error 0001");
             System.err.println(ex);
         }
         this.myNode = myNode;
     }
 
+    @Override
     public void stop() {
         this.live = false;
     }
@@ -52,7 +53,7 @@ public class SocketConnector implements Connector {
             sendSocket.send(packet);
 
 //        myNode.getGUI().echo("Message sent...");
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             System.out.println("Error 00002");
             System.err.println(ex);
         }
