@@ -16,4 +16,6 @@ public interface Connector {
     public void sendToBS(String message);
 
     public void listen(int port);
+    
+    public void stop();
 }
