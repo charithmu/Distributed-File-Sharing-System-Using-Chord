@@ -7,7 +7,7 @@ package com.uom.view;
 
 import com.uom.bootstrapServer.BootstrapServer;
 import com.uom.chord.Node;
-import com.uom.chord.NodeImpl;
+import com.uom.chord.Node;
 import java.net.DatagramSocket;
 import java.net.BindException;
 import java.net.SocketException;
@@ -22,7 +22,7 @@ public class GUI extends javax.swing.JFrame {
     /**
      * Creates new form GUI
      */
-    NodeImpl node;
+    Node node;
 
     public GUI() {
         //node.registerToNetwork();
@@ -631,7 +631,7 @@ public class GUI extends javax.swing.JFrame {
             @Override
             public void run() {
 
-                //NodeImpl node1 = new NodeImpl("Three", 3003);
+                //NodeImpl node1 = new Node("Three", 3003);
                 node.unregisterFromNetwork();
                 System.out.println("Unregistered from network: " + node.getIp());
 //                    
@@ -682,7 +682,7 @@ public class GUI extends javax.swing.JFrame {
         int pno = Integer.parseInt(enterPort.getText());
         String BSHost = Textuser1.getText();
         int bsPort = Integer.parseInt(Textuser2.getText());
-        node = new NodeImpl(Textuser.getText(), node.getMyIP(), pno, BSHost, bsPort, this, true);
+        node = new Node(Textuser.getText(), node.getMyIP(), pno, BSHost, bsPort, this, true);
 
         IP.setText(node.getIp());
         PortNo.setText(String.valueOf(node.getPort()));
