@@ -13,13 +13,6 @@ import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 
-/**
- * This Class provides the implementation of the server side, of each of the
- * nodes.
- *
- * @author Vithusha Aarabhi
- * @author Jayan Vidanapathirana
- */
 public class RestConnector implements Connector {
 
     private boolean started = false;
