@@ -17,7 +17,7 @@ public class FingerFixer extends Thread {
     private final FingerTable fingerTable;
     private final boolean[] waitingForReply;
     private final long[] lastFindSIssue;
-    boolean fileDistributed;
+//    boolean fileDistributed;
 
     public FingerFixer(Node thisNode) {
         this.setName("FingerFixer-Thread");
@@ -25,7 +25,7 @@ public class FingerFixer extends Thread {
         this.fingerTable = thisNode.getFingerTable();
         this.waitingForReply = new boolean[Node.MAX_FINGERS];
         this.lastFindSIssue = new long[Node.MAX_FINGERS];
-        this.fileDistributed = false;
+//        this.fileDistributed = false;
     }
 
     public void setWaitingForReply(int index, boolean waitStatus) {
@@ -48,10 +48,10 @@ public class FingerFixer extends Thread {
                     fingerToFixNext++;
                     if (fingerToFixNext >= Node.MAX_FINGERS) {
 //                        System.out.println("FingerFixer New iteration...");
-                        if (!fileDistributed) {
-                            thisNode.distributeFileMetadata();
-                            fileDistributed = true;
-                        }
+//                        if (!fileDistributed) {
+//                            thisNode.distributeFileMetadata();
+//                            fileDistributed = true;
+//                        }
                         Thread.sleep(5000);
                         fingerToFixNext = 0;
                     }

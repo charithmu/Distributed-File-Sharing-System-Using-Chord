@@ -5,7 +5,6 @@
  */
 package com.uom.chord;
 
-
 import Chord.SimpleNeighbor;
 import com.uom.communication.SocketConnector;
 import com.uom.view.GUI;
@@ -19,7 +18,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-
 
 /**
  *
@@ -93,20 +91,22 @@ public final class Node {
         this.id = getHash(this.ip + this.port);
     }
 
-//    public Node(String username, int port, String BSip, int BSport) {
-//        this(username, getMyIP(), port, BSip, BSport);
-//    }
-//    public Node(String username, int port) {
-//        this(username, getMyIP(), port, "192.168.43.96", 55555);
-//    }
     public void initialize() {
-//        gui.echo("Init (" + this.username + ")");
         populateWithFiles();
         this.socketConnector.listen(port);
-//        echo("initializing key:" + this.id);
-//        gui.echo("Start listening...(" + port + ") ");
-
-//        distributeFileMetadata();
+        
+        new Thread(){
+            @Override
+            public void run(){
+                try {
+                    Thread.sleep(10 * 1000);
+                    distributeFileMetadata();
+                } catch (InterruptedException ex) {
+                    System.err.println(ex);
+                }
+                
+            }
+        }.start();
     }
 
     public String getIp() {
@@ -205,9 +205,6 @@ public final class Node {
     }
 
     public static String getMyIP() {
-//        if (1 == 1) {
-//            return "localhost";
-//        }
         try {
             final DatagramSocket socket = new DatagramSocket();
             socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
@@ -219,8 +216,6 @@ public final class Node {
     }
 
     public void populateWithFiles() {
-
-//        gui.echo("Populating files:");
         ArrayList<String> filelist = new ArrayList<>(Arrays.asList("Adventures of Tintin", "Jack and Jill", "Glee", "The Vampire Diarie", "King Arthur", "Windows XP", "Harry Potter", "Kung Fu Panda", "Lady Gaga", "Twilight", "Windows 8", "Mission Impossible", "Turn Up The Music", "Super Mario", "American Pickers", "Microsoft Office 2010", "Happy Feet", "Modern Family", "American Idol", "Hacking for Dummies"));
         String text = "<html>";
         for (int i = 0; i < 3; i++) {
@@ -236,17 +231,6 @@ public final class Node {
         }
     }
 
-//    @Override
-//    public void routeMessges(String message, int key) {
-//        Node next;
-//        if ((next = fingerTable.getNode(key)) == null) {
-//            next = fingerTable.getClosestPredecessorToKey(key);
-//        }
-//        if (next == null) {
-//            next = this.successor;
-//        }
-//        redirectMessage(message, next);
-//    }
     public void registerToNetwork() {
 
         String registerMessage = " " + "REG" + " " + ip + " " + Integer.toString(port) + " " + username;

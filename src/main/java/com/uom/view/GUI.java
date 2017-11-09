@@ -670,10 +670,8 @@ public class GUI extends javax.swing.JFrame {
     public void updateMetadataTable(String file, Map<String, Node> metaData) {
         DefaultTableModel model = (DefaultTableModel) jTable3.getModel();
 
-        int rowCount = model.getRowCount();
-        //Remove rows one by one from the end of the table
-        for (int i = rowCount - 1; i >= 0; i--) {
-            model.removeRow(i);
+        while(model.getRowCount()>0){
+            model.removeRow(0);
         }
 
         for (String currentKey : metaData.keySet()) {
