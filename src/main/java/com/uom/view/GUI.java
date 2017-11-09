@@ -5,12 +5,12 @@
  */
 package com.uom.view;
 
-import com.uom.bootstrapServer.BootstrapServer;
+import BootstrapServer.BootstrapServer;
 import com.uom.chord.Node;
-import com.uom.chord.NodeImpl;
 import java.net.DatagramSocket;
 import java.net.BindException;
 import java.net.SocketException;
+import java.util.Map;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -22,7 +22,7 @@ public class GUI extends javax.swing.JFrame {
     /**
      * Creates new form GUI
      */
-    NodeImpl node;
+    Node node;
 
     public GUI() {
         //node.registerToNetwork();
@@ -631,7 +631,7 @@ public class GUI extends javax.swing.JFrame {
             @Override
             public void run() {
 
-                //NodeImpl node1 = new NodeImpl("Three", 3003);
+                //NodeImpl node1 = new Node("Three", 3003);
                 node.unregisterFromNetwork();
                 System.out.println("Unregistered from network: " + node.getIp());
 //                    
@@ -667,9 +667,20 @@ public class GUI extends javax.swing.JFrame {
         jLabel15.setText(text);
     }
 
-    public void updateMetadataTable(String file, Node Mnode) {
+    public void updateMetadataTable(String file, Map<String, Node> metaData) {
         DefaultTableModel model = (DefaultTableModel) jTable3.getModel();
-        model.addRow(new Object[]{Mnode.getID(), Mnode.getIp(), Mnode.getPort(), Mnode.getUserName(), file});
+
+        int rowCount = model.getRowCount();
+        //Remove rows one by one from the end of the table
+        for (int i = rowCount - 1; i >= 0; i--) {
+            model.removeRow(i);
+        }
+
+        for (String currentKey : metaData.keySet()) {
+            Node Mnode = metaData.get(currentKey);
+            model.addRow(new Object[]{Mnode.getID(), Mnode.getIp(), Mnode.getPort(), Mnode.getUserName(), file});
+        }
+
     }
 
     public void echo(String text) {
@@ -682,7 +693,7 @@ public class GUI extends javax.swing.JFrame {
         int pno = Integer.parseInt(enterPort.getText());
         String BSHost = Textuser1.getText();
         int bsPort = Integer.parseInt(Textuser2.getText());
-        node = new NodeImpl(Textuser.getText(), node.getMyIP(), pno, BSHost, bsPort, this, true);
+        node = new Node(Textuser.getText(), node.getMyIP(), pno, BSHost, bsPort, this, true);
 
         IP.setText(node.getIp());
         PortNo.setText(String.valueOf(node.getPort()));
@@ -767,10 +778,6 @@ public class GUI extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(GUI.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>

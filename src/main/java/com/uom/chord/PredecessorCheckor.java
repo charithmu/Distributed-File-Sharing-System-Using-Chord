@@ -36,11 +36,11 @@ public class PredecessorCheckor extends Thread {
                     if (!predecessorHBOK) {
                         System.out.println("No reply for HB. Setting predecessor to null");
                         thisNode.setPredecessor(null);
-                    }else{
+                    } else {
                         System.out.println("Predecessor " + thisNode.getPredeccessor().getID() + "is alive.");
                     }
                     predecessorHBOK = false;
-                }else{  // no predecessor, sleep for 3 min
+                } else {  // no predecessor, sleep for 3 min
                     System.out.println("Predecessor null. Check again in 1 min");
                     Thread.sleep(60 * 1000);
                 }

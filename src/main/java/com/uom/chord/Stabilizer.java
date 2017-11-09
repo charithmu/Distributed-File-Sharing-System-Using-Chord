@@ -56,7 +56,7 @@ public class Stabilizer extends Thread {
                         int currentSuccessorID = thisNode.getSuccessor().getID();
                         // this node and successor are in opposite side of 0
                         if (currentSuccessorID < thisNode.getID()) {
-                            if ((thisNode.getID() < predOfSuccessorID && predOfSuccessorID < NodeImpl.MAX_NODES) || (0 <= predOfSuccessorID && predOfSuccessorID < currentSuccessorID)) {
+                            if ((thisNode.getID() < predOfSuccessorID && predOfSuccessorID < Node.MAX_NODES) || (0 <= predOfSuccessorID && predOfSuccessorID < currentSuccessorID)) {
                                 thisNode.setSuccessor(newPredessor);
                                 notify = true;
                                 System.out.println("Update Successor of" + thisNode.getID() + " to " + predOfSuccessorID);
