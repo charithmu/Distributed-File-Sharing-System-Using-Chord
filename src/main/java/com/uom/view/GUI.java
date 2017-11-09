@@ -5,12 +5,12 @@
  */
 package com.uom.view;
 
-import com.uom.bootstrapServer.BootstrapServer;
-import com.uom.chord.Node;
+import BootstrapServer.BootstrapServer;
 import com.uom.chord.Node;
 import java.net.DatagramSocket;
 import java.net.BindException;
 import java.net.SocketException;
+import java.util.Map;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -667,9 +667,20 @@ public class GUI extends javax.swing.JFrame {
         jLabel15.setText(text);
     }
 
-    public void updateMetadataTable(String file, Node Mnode) {
+    public void updateMetadataTable(String file, Map<String, Node> metaData) {
         DefaultTableModel model = (DefaultTableModel) jTable3.getModel();
-        model.addRow(new Object[]{Mnode.getID(), Mnode.getIp(), Mnode.getPort(), Mnode.getUserName(), file});
+
+        int rowCount = model.getRowCount();
+        //Remove rows one by one from the end of the table
+        for (int i = rowCount - 1; i >= 0; i--) {
+            model.removeRow(i);
+        }
+
+        for (String currentKey : metaData.keySet()) {
+            Node Mnode = metaData.get(currentKey);
+            model.addRow(new Object[]{Mnode.getID(), Mnode.getIp(), Mnode.getPort(), Mnode.getUserName(), file});
+        }
+
     }
 
     public void echo(String text) {
@@ -767,10 +778,6 @@ public class GUI extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(GUI.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>

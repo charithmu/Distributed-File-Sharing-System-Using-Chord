@@ -5,6 +5,8 @@
  */
 package com.uom.chord;
 
+
+import Chord.SimpleNeighbor;
 import com.uom.communication.SocketConnector;
 import com.uom.view.GUI;
 import java.net.DatagramSocket;
@@ -19,7 +21,6 @@ import java.util.Map;
 import java.util.Random;
 
 
-
 /**
  *
  * @author erang
@@ -28,7 +29,7 @@ public final class Node {
 
     private GUI gui;
     public static final int MAX_FINGERS = 4;
-    public static final int MAX_NODES = (int) Math.pow(2, MAX_FINGERS);
+    public static final int MAX_NODES = 1024;//(int) Math.pow(2, MAX_FINGERS);
 
     private final String BSip;
     private final int BSport;
@@ -89,7 +90,7 @@ public final class Node {
         this.port = port;
         this.BSip = null;
         this.BSport = 0;
-        this.id = getHash(this.ip + this.port) % MAX_NODES;
+        this.id = getHash(this.ip + this.port);
     }
 
 //    public Node(String username, int port, String BSip, int BSport) {
@@ -200,7 +201,7 @@ public final class Node {
 
     private void insertFileMetadata(String file, Node Mnode) {
         this.metaData.put(file, Mnode);
-        gui.updateMetadataTable(file, Mnode);
+        gui.updateMetadataTable(file, metaData);
     }
 
     public static String getMyIP() {
@@ -634,7 +635,7 @@ public final class Node {
                     break;
 
                 case "REGMD":
-                    gui.echo(message);
+//                    gui.echo(message);
                     String ownerIP = messageList[1];
                     int ownerPort = Integer.parseInt(messageList[2]);
                     String ownerName = messageList[3];

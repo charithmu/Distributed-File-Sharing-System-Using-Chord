@@ -9,7 +9,7 @@ package com.uom.chord;
  *
  * @author erang
  */
-public class FingerTable {
+public class FingerTable{
 
     Node[] fingerEntries;
     private int maxEntries;
@@ -34,7 +34,9 @@ public class FingerTable {
 
     public Node getNode(int key) {
         for (Node node : fingerEntries) {
-            if (node.getID() == key) {
+            if (node == null) {
+                System.out.println("node is null");
+            } else if (node.getID() == key) {
                 return node;
             }
         }

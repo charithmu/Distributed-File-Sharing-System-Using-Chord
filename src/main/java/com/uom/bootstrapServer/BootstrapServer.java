@@ -1,4 +1,4 @@
-package com.uom.bootstrapServer;
+package BootstrapServer;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

@@ -1,9 +1,9 @@
-package com.uom.bootstrapServer;
+package BootstrapServer;
 
 class Neighbour{
-	private String ip;
-	private int port;
-	private String username;	
+	private final String ip;
+	private final int port;
+	private final String username;	
 
 	public Neighbour(String ip, int port, String username){
 		this.ip = ip;
