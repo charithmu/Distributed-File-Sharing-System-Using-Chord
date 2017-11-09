@@ -5,12 +5,14 @@
  */
 package com.uom.communication;
 
-import com.uom.chord.Node;
+import com.uom.Chord.Node;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+
+
 
 /**
  * Only handles communication. sends and receive messages and delegate handling
