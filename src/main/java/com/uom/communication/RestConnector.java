@@ -1,6 +1,10 @@
 package com.uom.communication;
 
 import com.uom.chord.Node;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -89,7 +93,28 @@ public class RestConnector implements Connector {
 
     @Override
     public void sendToBS(String message) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            DatagramSocket socket = new DatagramSocket();
+
+            byte[] b = message.getBytes();
+
+            DatagramPacket dp = new DatagramPacket(b, b.length, InetAddress.getByName(myNode.getBSip()), myNode.getBSport());
+            socket.send(dp);
+
+            //now receive reply
+            //buffer to receive incoming data
+            byte[] buffer = new byte[65536];
+            DatagramPacket repl = new DatagramPacket(buffer, buffer.length);
+            socket.receive(repl);
+
+            byte[] data = repl.getData();
+            String reply = new String(data, 0, repl.getLength());
+
+            myNode.handleMessage(reply, repl.getAddress().getHostAddress());
+
+        } catch (IOException e) {
+            System.err.println("IOException " + e);
+        }
     }
 
 }

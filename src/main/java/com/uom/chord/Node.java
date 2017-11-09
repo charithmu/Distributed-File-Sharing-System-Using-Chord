@@ -6,7 +6,7 @@
 package com.uom.chord;
 
 import Chord.SimpleNeighbor;
-import com.uom.communication.SocketConnector;
+import com.uom.communication.RestConnector;
 import com.uom.view.GUI;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -37,8 +37,8 @@ public final class Node {
     private final String username;
     private final int id;
 
-    private SocketConnector socketConnector;
-
+//    private SocketConnector connector;
+    private RestConnector connector;
     private FingerTable fingerTable;
     private Node successor;
     private Node predecessor;
@@ -67,7 +67,8 @@ public final class Node {
             files = new ArrayList<>();
             neighborList = new ArrayList<>();
 
-            this.socketConnector = new SocketConnector(this);
+//            this.connector = new SocketConnector(this);
+            this.connector = new RestConnector(this);
 
             this.stabilizer = new Stabilizer(this);
             this.fingerFixer = new FingerFixer(this);
@@ -93,18 +94,18 @@ public final class Node {
 
     public void initialize() {
         populateWithFiles();
-        this.socketConnector.listen(port);
-        
-        new Thread(){
+        this.connector.listen(port);
+
+        new Thread() {
             @Override
-            public void run(){
+            public void run() {
                 try {
                     Thread.sleep(10 * 1000);
                     distributeFileMetadata();
                 } catch (InterruptedException ex) {
                     System.err.println(ex);
                 }
-                
+
             }
         }.start();
     }
@@ -156,7 +157,7 @@ public final class Node {
     }
 
     public void redirectMessage(String message, Node next) {
-        socketConnector.send(message, next.getIp(), next.getPort());
+        connector.send(message, next.getIp(), next.getPort());
 //        echo("redirecting message to: " + next.getPort() + "(" + message + ")");
     }
 
@@ -192,7 +193,7 @@ public final class Node {
                 receiver = this.successor;
             }
             if (receiver != null) {
-                socketConnector.send(message, receiver.getIp(), receiver.getPort());
+                connector.send(message, receiver.getIp(), receiver.getPort());
             } else {
                 gui.echo("No receiver found for metadata distribution");
             }
@@ -240,7 +241,7 @@ public final class Node {
                 + Integer.toString(length) + registerMessage;
 
 //        gui.echo("register message - (" + registerMessage + ")");
-        socketConnector.sendToBS(registerMessage);
+        connector.sendToBS(registerMessage);
 
     }
 
@@ -253,7 +254,7 @@ public final class Node {
 
         unregisterMessage = String.join("", Collections.nCopies(4 - (Integer.toString(length).length()), "0")) + Integer.toString(length) + unregisterMessage;
 
-        socketConnector.sendToBS(unregisterMessage);
+        connector.sendToBS(unregisterMessage);
     }
 
     public void joinNetwork() {
@@ -268,7 +269,7 @@ public final class Node {
 
     public void sendMessageToSuccessor() {
         String message = "FS " + this.id + " " + this.ip + " " + this.port;
-        this.socketConnector.send(message, this.neighborList.get(0).getIp(), this.neighborList.get(0).getPort());
+        this.connector.send(message, this.neighborList.get(0).getIp(), this.neighborList.get(0).getPort());
 //        echo("Sending message to neighbor (" + this.neighborList.get(0).getPort() + "), Routing to self (" + message + ")");
     }
 
@@ -286,7 +287,7 @@ public final class Node {
         } else if (this.searchMetaData(searchString) != null) {
             Node receiver = this.searchMetaData(searchString);
             gui.echo("Sending message: " + searchQuery + " (to " + receiver.getIp() + ":" + receiver.getPort() + ") - found this node in meta data");
-            socketConnector.send(searchQuery, receiver.getIp(), receiver.getPort());
+            connector.send(searchQuery, receiver.getIp(), receiver.getPort());
         } //else do this
         else {
             Node receiver = null;
@@ -300,7 +301,7 @@ public final class Node {
             }
             if (receiver != null) {
                 gui.echo("Sending message: " + searchQuery + " (to " + receiver.getIp() + ":" + receiver.getPort() + ")");
-                socketConnector.send(searchQuery, receiver.getIp(), receiver.getPort());
+                connector.send(searchQuery, receiver.getIp(), receiver.getPort());
             } else {
                 gui.updateDisplay("No receiver found");
             }
@@ -361,7 +362,7 @@ public final class Node {
 //                        gui.echo("succ null");
                         ///send me as the successor for new node
                         String tempMsg = "US " + this.getIp() + " " + this.getPort();
-                        socketConnector.send(tempMsg, messageList[2], Integer.parseInt(messageList[3]));
+                        connector.send(tempMsg, messageList[2], Integer.parseInt(messageList[3]));
 
                     } else {
                         boolean routMessage = true;
@@ -370,7 +371,7 @@ public final class Node {
                                 //Ask to update new nodes successor to my successor
                                 //"US <successorIP> <successorPort>"
                                 String tempMsg = "US " + successor.getIp() + " " + successor.getPort();
-                                socketConnector.send(tempMsg, messageList[2], Integer.parseInt(messageList[3]));
+                                connector.send(tempMsg, messageList[2], Integer.parseInt(messageList[3]));
 
                                 Node tempSuccessor = new Node(null, messageList[2], Integer.parseInt(messageList[3]), true);
                                 this.setSuccessor(tempSuccessor);
@@ -385,7 +386,7 @@ public final class Node {
                             }
                         } else if ((id < key && key < MAX_NODES) || (0 <= key && key < successor.getID())) {
                             String tempMsg = "US " + successor.getIp() + " " + successor.getPort();
-                            socketConnector.send(tempMsg, messageList[2], Integer.parseInt(messageList[3]));
+                            connector.send(tempMsg, messageList[2], Integer.parseInt(messageList[3]));
 
                             Node tempSuccessor = new Node(null, messageList[2], Integer.parseInt(messageList[3]), true);
                             this.setSuccessor(tempSuccessor);
@@ -403,7 +404,7 @@ public final class Node {
                             if (next != null) {
                                 if (next.getID() == id) {
                                     String tempMsg = "US " + ip + " " + port;
-                                    socketConnector.send(tempMsg, messageList[2], Integer.parseInt(messageList[3]));
+                                    connector.send(tempMsg, messageList[2], Integer.parseInt(messageList[3]));
 
                                     Node tempPredecessor = new Node(null, messageList[2], Integer.parseInt(messageList[3]), true);
                                     this.setPredecessor(tempPredecessor);
@@ -415,7 +416,7 @@ public final class Node {
                                 socketConnector.send(tempMsg, incomingIP, Integer.parseInt(messageList[3]));
                                 gui.echo(this.getPort() + ": request finger table : (" + tempMsg + ")");*/
                                 } else {
-                                    socketConnector.send(message, next.getIp(), next.getPort());
+                                    connector.send(message, next.getIp(), next.getPort());
                                 }
                             } else {
                                 System.err.println("Couldn't find a succosser for " + message);
@@ -435,7 +436,7 @@ public final class Node {
                             try {
                                 Thread.sleep(1000);
                                 String tempRFTMsg = "RFT " + ip + " " + port;
-                                socketConnector.send(tempRFTMsg, incomingIP, Integer.parseInt(messageList[2]));
+                                connector.send(tempRFTMsg, incomingIP, Integer.parseInt(messageList[2]));
 //                                gui.echo(port + ": request finger table : (" + tempRFTMsg + ")");
                             } catch (InterruptedException ex) {
                                 ex.printStackTrace();
@@ -462,7 +463,7 @@ public final class Node {
                         Node entry = fingerTable.getEntryByIndex(i);
                         tempMsg += entry.getIp() + " " + entry.getPort() + " ";
                     }
-                    socketConnector.send(tempMsg, messageList[1], Integer.parseInt(messageList[2]));
+                    connector.send(tempMsg, messageList[1], Integer.parseInt(messageList[2]));
 //                    gui.echo(this.getPort() + ": sending finger table to : " + messageList[2] + " (" + tempMsg + ")");
                     break;
                 case "UFT"://update finger table
@@ -571,11 +572,11 @@ public final class Node {
 //
 //                        searchQuery = String.join("", Collections.nCopies(4 - (Integer.toString(length).length()), "0")) + Integer.toString(length) + searchQuery;
 
-                        socketConnector.send(searchQuery, tempIP, TempPort);
+                        connector.send(searchQuery, tempIP, TempPort);
                     } else if (this.searchMetaData(searchString) != null) {
                         Node receiver = this.searchMetaData(searchString);
                         gui.echo("Sending message: " + message + " (to " + receiver.getIp() + ":" + receiver.getPort() + ") - found this node in meta data");
-                        socketConnector.send(message, receiver.getIp(), receiver.getPort());
+                        connector.send(message, receiver.getIp(), receiver.getPort());
                     } //else do this
                     else {
                         gui.echo("file not exist");
@@ -603,7 +604,7 @@ public final class Node {
 
                         if (receiver != null) {
                             gui.echo("Sending message: " + message + " (to " + receiver.getIp() + ":" + receiver.getPort() + ")");
-                            socketConnector.send(message, receiver.getIp(), receiver.getPort());
+                            connector.send(message, receiver.getIp(), receiver.getPort());
                         } else {
                             gui.updateDisplay("No receiver found");
                         }
@@ -635,7 +636,7 @@ public final class Node {
 //                        receiver = this.successor;
 //                    }
                     if (receiver != null) {
-                        socketConnector.send(message, receiver.getIp(), receiver.getPort());
+                        connector.send(message, receiver.getIp(), receiver.getPort());
                     } else {
                         gui.echo("No receiver found for metadata distribution");
                     }
@@ -702,7 +703,7 @@ public final class Node {
                 switch (messageList[2]) {
                     case "0":
                         gui.echo("Successfully unregistered.\n");
-                        this.socketConnector.stop(); //stop listning, equivelent to leave the network
+                        this.connector.stop(); //stop listning, equivelent to leave the network
                         stabilizer.stop();
                         fingerFixer.stop();
                         //predecessorCheckor.stop();
