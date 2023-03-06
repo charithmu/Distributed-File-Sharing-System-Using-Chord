@@ -128,7 +128,7 @@
 		<args4j.version>2.33</args4j.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<log4j2.version>2.16.0</log4j2.version>
-		<testng.version>6.11</testng.version>
+		<testng.version>7.7.0</testng.version>
 		<jersey.version>2.25.1</jersey.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
